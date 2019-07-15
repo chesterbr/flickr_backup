@@ -10,6 +10,10 @@ It will:
 - Skip photos that you've already downloaded;
 - Remove photos that aren't on the album (so renames and moves are considered).
 
+It will **not**:
+
+- Consider "renamed" albums (those whose titles have changed) or deleted albums ([issue](https://github.com/chesterbr/flickr-backup/issues/1#issue-467934350))
+
 ## Installation
 
 Ensure your computer has a modern Ruby installed (I tested with 2.4.1), then clone or download this project and run these commands:
