@@ -1,0 +1,171 @@
+#!/usr/bin/env ruby
+
+require 'flickraw'
+require 'open-uri'
+
+class FlickrBackup
+  # You can customize these
+  BACKUP_DIRECTORY = "backup"
+  SECONDS_BETWEEN_DOWNLOADS = 0 # Increase if you want to throttle
+  CREDENTIALS_FILENAME = "authentication_data"
+
+  # These seem safe to share (since a malicious party would need the downloaded
+  # credentials to do anything), but let me know otherwise!
+  FLICKR_BACKUP_API_KEY = "6a805bb1fd62642608d2ad8e7a4ec555"
+  FLICKR_BACKUP_SHARED_SECRET = "f164387e68651041"
+
+  class << self
+    # Change this to customize how album directories are named
+    def album_directory(album)
+      "#{BACKUP_DIRECTORY}/#{strip_odd_chars(album.title)}"
+    end
+
+    # Change this to customize how photo files are named
+    # (keep in mind they must be unique, so using photo.id somewhere is a good idea)
+    def photo_file(photo, album)
+      "#{album_directory(album)}/#{strip_odd_chars(photo.title)}_#{photo.id}.#{photo.originalformat}"
+    end
+
+    # Main loop: creates a directory for each album of a Flickr user,
+    # downloading the photos on that album just like they were uploaded
+    # (original size, EXIF tags, etc)
+    def perform
+      authenticate_user
+      create_backup_directory
+      albums = flickr_albums
+      save_metadata(albums)
+      albums.each do |album|
+        puts "=== #{album.title}"
+        photos = flickr_photos(album)
+        create_directory(album)
+        download_missing(photos, album)
+        delete_extraneous(photos, album)
+      end
+    end
+
+    def download_missing(photos, album)
+      photos.each do |photo|
+        if downloaded?(photo, album)
+          puts "Skipping #{photo.title}"
+        else
+          puts "Downloading #{photo.title}"
+          download(photo, album)
+          sleep SECONDS_BETWEEN_DOWNLOADS
+        end
+      end
+    end
+
+    def delete_extraneous(photos, album)
+      existing = Dir.glob("#{album_directory(album)}/*")
+      expected = photos.map { |photo| photo_file(photo, album) }
+      extraneous = existing - expected
+
+      extraneous.each do |filename|
+        puts "Deleting #{File.basename(filename)}"
+        File.delete(filename)
+      end
+    end
+
+    def download(photo, album)
+      filename = photo_file(photo, album)
+      downloaded_data = URI.parse(source_url(photo)).read
+      File.open(filename, "wb") do |file|
+        file.write(downloaded_data)
+      end
+    rescue => e
+      # If anything fails, don't keep the file
+      # (so we'll try again for sure)
+      File.delete(filename) if File.exist?(filename)
+      raise
+    end
+
+    def downloaded?(photo, album)
+      File.exists?(photo_file(photo, album))
+    end
+
+    ## Flickr authentication and credentials management
+
+    def flickr
+      @flickr ||= FlickRaw::Flickr.new(api_key: FLICKR_BACKUP_API_KEY, shared_secret: FLICKR_BACKUP_SHARED_SECRET)
+    end
+
+    def authenticate_user
+      # If we can load stored credentials, we are good...
+      return if load_credentials
+
+      # ...otherwise, let's request permission on the browser...
+      token = flickr.get_request_token
+      auth_url = flickr.get_authorize_url(token['oauth_token'], :perms => 'read')
+
+      puts "Open this url in your browser to complete the authentication process : #{auth_url}"
+      puts "Copy here the number given when you complete the process."
+      verify = gets.strip
+
+      begin
+        ### ...and if we can verify it succeeded, store the credentials for next time
+        flickr.get_access_token(token['oauth_token'], token['oauth_token_secret'], verify)
+        save_credentials
+        puts "You are now authenticated. Your credentials are saved to the #{CREDENTIALS_FILENAME} file."
+      rescue FlickRaw::FailedResponse => e
+        abort "Authentication failed : #{e.msg}"
+      end
+    end
+
+    def save_credentials
+      File.open(CREDENTIALS_FILENAME, 'w') { |f| f.write([flickr.access_token, flickr.access_secret].join(",")) }
+    end
+
+    def load_credentials
+      File.open(CREDENTIALS_FILENAME, 'r') do |f|
+        flickr.access_token, flickr.access_secret = f.readline.split(",")
+        return true
+      end
+    rescue => e
+      false
+    end
+
+    ## Flickr elements (albums, photos and URLs)
+
+    def flickr_albums
+      flickr.photosets.getList
+    end
+
+    def flickr_photos(album)
+      result = []
+      page_number = 1
+      loop do
+        photoset = flickr.photosets.getPhotos(photoset_id: album.id, extras: "original_format", page: page_number)
+        result += photoset.photo
+        page_number += 1
+        break if photoset.page == photoset.pages.to_s
+      end
+      result
+    end
+
+    def source_url(photo)
+      "https://farm#{photo.farm}.staticflickr.com/#{photo.server}/#{photo.id}_#{photo.originalsecret}_o.#{photo.originalformat}"
+    end
+
+    ## File and directory management
+
+    def create_backup_directory
+      Dir.mkdir(BACKUP_DIRECTORY) unless Dir.exists?(BACKUP_DIRECTORY)
+    end
+
+    def create_directory(album)
+      Dir.mkdir(album_directory(album)) unless Dir.exists?(album_directory(album))
+    end
+
+    def save_metadata(album)
+      File.write("#{BACKUP_DIRECTORY}/album_metadata", album.inspect)
+    end
+
+    def strip_odd_chars(filename)
+      filename.tr('/','-').tr('\\','-')
+    end
+  end
+end
+
+if __FILE__==$0
+  FlickrBackup.perform
+end
