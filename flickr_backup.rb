@@ -37,7 +37,6 @@ class FlickrBackup
       albums = flickr_albums
       save_metadata(albums)
       albums.each do |album|
-        puts "=== #{album.title}"
         photos = flickr_photos(album)
         create_directory(album)
         download_missing(photos, album)
@@ -48,9 +47,9 @@ class FlickrBackup
     def download_missing(photos, album)
       photos.each do |photo|
         if downloaded?(photo, album)
-          puts "Skipping #{photo.title}"
+          puts "Skipping #{photo_file(photo, album)}"
         else
-          puts "Downloading #{photo.title}"
+          puts "Downloading #{photo_file(photo, album)}"
           download(photo, album)
           sleep SECONDS_BETWEEN_DOWNLOADS
         end
