@@ -76,7 +76,7 @@ class FlickrBackup
     rescue => e
       # If anything fails, don't keep the file
       # (so we'll try again for sure)
-      File.delete(filename) if File.exist?(filename)
+      File.delete(filename) if File.exists?(filename)
       raise
     end
 
