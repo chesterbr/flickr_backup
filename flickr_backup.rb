@@ -7,6 +7,7 @@ class FlickrBackup
   # You can customize these
   BACKUP_DIRECTORY = "backup"
   SECONDS_BETWEEN_DOWNLOADS = 0 # Increase if you want to throttle
+  MAX_TITLE_LENGTH_IN_FILENAME = 150 # Avoids Errno::ENAMETOOLONG
   CREDENTIALS_FILENAME = "authentication_data"
 
   # These seem safe to share (since a malicious party would need the downloaded
@@ -23,7 +24,8 @@ class FlickrBackup
     # Change this to customize how photo files are named
     # (keep in mind they must be unique, so using photo.id somewhere is a good idea)
     def photo_file(photo, album)
-      "#{album_directory(album)}/#{strip_odd_chars(photo.title)}_#{photo.id}.#{photo.originalformat}"
+      title = photo.title[0..MAX_TITLE_LENGTH_IN_FILENAME - 1]
+      "#{album_directory(album)}/#{strip_odd_chars(title)}_#{photo.id}.#{photo.originalformat}"
     end
 
     # Main loop: creates a directory for each album of a Flickr user,
