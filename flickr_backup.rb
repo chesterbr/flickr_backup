@@ -18,14 +18,14 @@ class FlickrBackup
   class << self
     # Change this to customize how album directories are named
     def album_directory(album)
-      "#{BACKUP_DIRECTORY}/#{strip_odd_chars(album.title)}"
+      "#{BACKUP_DIRECTORY}/#{strip_odd_chars(album.title)}".unicode_normalize
     end
 
     # Change this to customize how photo files are named
     # (keep in mind they must be unique, so using photo.id somewhere is a good idea)
     def photo_file(photo, album)
       title = photo.title[0..MAX_TITLE_LENGTH_IN_FILENAME - 1]
-      "#{album_directory(album)}/#{strip_odd_chars(title)}_#{photo.id}.#{photo.originalformat}"
+      "#{album_directory(album)}/#{strip_odd_chars(title)}_#{photo.id}.#{photo.originalformat}".unicode_normalize
     end
 
     # Main loop: creates a directory for each album of a Flickr user,
@@ -57,7 +57,7 @@ class FlickrBackup
     end
 
     def delete_extraneous(photos, album)
-      existing = Dir.glob("#{album_directory(album)}/*")
+      existing = Dir.glob("#{album_directory(album)}/*").map(&:unicode_normalize)
       expected = photos.map { |photo| photo_file(photo, album) }
       extraneous = existing - expected
 
