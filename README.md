@@ -13,8 +13,7 @@ It will:
 
 It will **not**:
 
-- Consider "renamed" albums (those whose titles have changed) or deleted albums ([issue](https://github.com/chesterbr/flickr-backup/issues/1#issue-467934350)).
-  (renamed albums will be downloaded twice and deleted albums will not be deleted locally);
+- Consider "renamed" albums (those whose titles have changed) or deleted albums (renamed albums will be downloaded twice and deleted albums will not be deleted locally; [see issue](https://github.com/chesterbr/flickr-backup/issues/1#issue-467934350));
 - Download photos that aren't on an album;
 - Preserve the ordering on the photos.
 
