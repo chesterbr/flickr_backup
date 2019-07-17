@@ -8,7 +8,7 @@ It will:
 - Create a sub-directory for each album using its title (replacing `/` and `\` with `-`);
 - Download each photo (as it was originally uploaded), using its title and Flickr ID as a unique filename inside the album folder;
 - Skip photos that you've already downloaded;
-- Remove photos that aren't on the album (so renames and moves are considered);
+- Remove photos that aren't on the album (so renames and moves are reflected on subsequent backups);
 - Store metadata information on the albums (`backup/album_metadata`), but not on the photos (most of what I care about, such as location, is on their EXIF data).
 
 It will **not**:
