@@ -2,6 +2,8 @@
 
 This is a simple utility to do **incremental** backups of Flickr accounts that are **organized in albums** (aka photosets), so you can run it every time you add/remove photos to them.
 
+![2019-07-17_09-18-37](https://user-images.githubusercontent.com/236297/61379131-ec8f5580-a874-11e9-99cb-18aba7509913.png)
+
 It will:
 
 - Create a `backup` directory;
