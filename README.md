@@ -9,7 +9,7 @@ It will:
 - Download each photo (as it was originally uploaded), using its title and Flickr ID as a unique filename inside the album folder;
 - Skip photos that you've already downloaded;
 - Remove photos that aren't on the album (so renames and moves are considered).
-- Stores metadata information on the albums (`backup/album_metadata`), but not on the photos (most of what I care about, such as location, is on their EXIF data).
+- Store metadata information on the albums (`backup/album_metadata`), but not on the photos (most of what I care about, such as location, is on their EXIF data).
 
 It will **not**:
 
