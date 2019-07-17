@@ -8,13 +8,14 @@ It will:
 - Create a sub-directory for each album using its title (replacing `/` and `\` with `-`);
 - Download each photo (as it was originally uploaded), using its title and Flickr ID as a unique filename inside the album folder;
 - Skip photos that you've already downloaded;
-- Remove photos that aren't on the album (so renames and moves are considered).
+- Remove photos that aren't on the album (so renames and moves are considered);
 - Store metadata information on the albums (`backup/album_metadata`), but not on the photos (most of what I care about, such as location, is on their EXIF data).
 
 It will **not**:
 
-- Consider "renamed" albums (those whose titles have changed) or deleted albums ([issue](https://github.com/chesterbr/flickr-backup/issues/1#issue-467934350)). Renamed albums will be downloaded twice and deleted albums will not be deleted locally.
-- Download photos that aren't on an album.
+- Consider "renamed" albums (those whose titles have changed) or deleted albums ([issue](https://github.com/chesterbr/flickr-backup/issues/1#issue-467934350)).
+  (renamed albums will be downloaded twice and deleted albums will not be deleted locally);
+- Download photos that aren't on an album;
 - Preserve the ordering on the photos.
 
 ## Installation
