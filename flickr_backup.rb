@@ -22,13 +22,15 @@ class FlickrBackup
     end
 
     # Change this to customize how photo files are named
-    # (keep in mind they must be unique, so using photo.id somewhere is a good idea)
+    # Keep in mind that:
+    #  - They must be inside album_directory(album)
+    #  - They must be unique (so using photo.id as part of the name is a good idea)
     def photo_file(photo, album)
       title = photo.title[0..MAX_TITLE_LENGTH_IN_FILENAME - 1]
       "#{album_directory(album)}/#{strip_odd_chars(title)}_#{photo.id}.#{photo.originalformat}".unicode_normalize
     end
 
-    # Main loop: creates a directory for each album of a Flickr user,
+    # Main loop: creates a directory for each album on a Flickr account,
     # downloading the photos on that album just like they were uploaded
     # (original size, EXIF tags, etc)
     def perform
@@ -43,6 +45,8 @@ class FlickrBackup
         delete_extraneous(photos, album)
       end
     end
+
+    ## Core actions
 
     def download_missing(photos, album)
       photos.each do |photo|
