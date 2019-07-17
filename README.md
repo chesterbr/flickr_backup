@@ -36,7 +36,7 @@ Start the script with:
 bundle exec flickr_backup.rb
 ```
 
-On the first run, it will require you to open a page on Flickr, so you can authorize it to download the albums/photos. It will store the credentials (in the `authentication_data` file), so subsequent runs will be non-interactive (so you can schedule it, etc.)
+On the first run, it will require you to open a page on Flickr, so you can authorize it to download the albums/photos. It will store the credentials (in the `authentication_data` file), so subsequent runs will be non-interactive.
 
 ## Motivation
 
