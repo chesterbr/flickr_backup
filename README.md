@@ -43,9 +43,6 @@ As much I still plan to stay with Flickr, one is never sure on who will own it n
 
 It was inspired on a couple other ones I saw around that either did not work incrementally, did not preserve the names in an easy-to-import-elsewhere fashion, or simply stopped working after the last acquisition disabled legacy authentication.
 
-## Caveats and bugs
-
-
 ## Development
 
 You can change the [script](flickr_backup.rb) to modify how the album folders and files are named, and a few other tweaks.
@@ -53,6 +50,8 @@ You can change the [script](flickr_backup.rb) to modify how the album folders an
 ## Caveats, Reporting Bugs and Contributing
 
 This isn't a really serious project (no tests, no CI, no release tagging), but just a script I wrote on a weekend. Because of that don't expect it to be highly maintained (in particular if I end up leaving Flickr), but [bug reports](https://github.com/chesterbr/flickr_backup/issues/new) and [contributions](https://github.com/chesterbr/flickr_backup/pulls) are welcome!
+
+It was tested on a Mac running Ruby 2.4.1, should have no issues on Linux and _probably_ on Windows (file management may play tricks) - [let me know](https://github.com/chesterbr/flickr_backup/issues/new) otherwise!
 
 All my projects are intended to be safe, welcoming spaces for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
