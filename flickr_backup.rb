@@ -9,6 +9,7 @@ class FlickrBackup
   SECONDS_BETWEEN_DOWNLOADS = 0 # Increase if you want to throttle
   MAX_TITLE_LENGTH_IN_FILENAME = 150 # Avoids Errno::ENAMETOOLONG
   CREDENTIALS_FILENAME = "authentication_data"
+  FLICKR_USERNAME_FILENAME = "username"
 
   # These seem safe to share (since a malicious party would need the downloaded
   # credentials to do anything), but let me know otherwise!
@@ -34,6 +35,7 @@ class FlickrBackup
     # downloading the photos on that album just like they were uploaded
     # (original size, EXIF tags, etc)
     def perform
+      request_flickr_username
       authenticate_user
       create_backup_directory
       albums = flickr_albums
@@ -94,6 +96,29 @@ class FlickrBackup
       @flickr ||= FlickRaw::Flickr.new(api_key: FLICKR_BACKUP_API_KEY, shared_secret: FLICKR_BACKUP_SHARED_SECRET)
     end
 
+    def request_flickr_username
+      # If we can load the stored username, we are good...
+      return if load_flickr_username
+
+      # ...otherwise, let's ask and store for the next time
+      puts "Enter your flickr username (needed for mp4 downloads):"
+      @flickr_username = gets
+      save_flickr_username
+    end
+
+    def save_flickr_username
+      File.open(FLICKR_USERNAME_FILENAME, 'w') { |f| f.write(@flickr_username) }
+    end
+
+    def load_flickr_username
+      File.open(FLICKR_USERNAME_FILENAME, 'r') do |f|
+        @flickr_username = f.readline.chomp
+        return true
+      end
+    rescue => e
+      false
+    end
+
     def authenticate_user
       # If we can load stored credentials, we are good...
       return if load_credentials
@@ -148,7 +173,11 @@ class FlickrBackup
     end
 
     def source_url(photo)
-      "https://farm#{photo.farm}.staticflickr.com/#{photo.server}/#{photo.id}_#{photo.originalsecret}_o.#{photo.originalformat}"
+      if photo.originalformat == "mp4"
+        "https://www.flickr.com/photos/#{@flickr_username}/#{photo.id}/play/orig/#{photo.originalsecret}"
+      else
+        "https://farm#{photo.farm}.staticflickr.com/#{photo.server}/#{photo.id}_#{photo.originalsecret}_o.#{photo.originalformat}"
+      end
     end
 
     ## File and directory management

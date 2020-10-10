@@ -9,6 +9,7 @@ It will:
 - Create a `backup` directory;
 - Create a sub-directory for each album using its title (replacing `/` and `\` with `-`);
 - Download each photo (as it was originally uploaded, including embedded metadata such as location and date taken), using its title and Flickr ID as filename, inside the album folder;
+- Download mp4 videos (using a [URL mentioned by a Flickr developer](https://www.flickr.com/groups/51035612836@N01/discuss/72157671986445591/72157674201095355) - it is _not_ the original video - typically has half the size, but I can't spot a difference in quality);
 - Skip photos that you've already downloaded;
 - Remove photos that aren't on the album (so renames and moves are reflected on subsequent backups);
 - Store album metadata (e.g., descriptions) in the `backup/album_metadata` file.
