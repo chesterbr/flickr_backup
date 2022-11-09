@@ -98,12 +98,16 @@ class FlickrBackup
 
     def request_flickr_username
       # If we can load the stored username, we are good...
-      return if load_flickr_username
+      if load_flickr_username
+        puts "Your username is #{@flickr_username} (from #{FLICKR_USERNAME_FILENAME})"
+        return
+      end
 
       # ...otherwise, let's ask and store for the next time
       puts "Enter your flickr username (needed for mp4 downloads):"
       @flickr_username = gets
       save_flickr_username
+      puts "Your username is saved to the #{FLICKR_USERNAME_FILENAME} file."
     end
 
     def save_flickr_username
