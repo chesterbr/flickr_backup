@@ -177,7 +177,7 @@ class FlickrBackup
     end
 
     def source_url(photo)
-      if photo.originalformat == "mp4"
+      if photo.originalformat == "mp4" || photo.originalformat == "mpg"
         "https://www.flickr.com/photos/#{@flickr_username}/#{photo.id}/play/orig/#{photo.originalsecret}"
       else
         "https://farm#{photo.farm}.staticflickr.com/#{photo.server}/#{photo.id}_#{photo.originalsecret}_o.#{photo.originalformat}"
